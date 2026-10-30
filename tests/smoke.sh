@@ -46,7 +46,7 @@ ok ".gitignore without trailing newline"
 # 4. Skill install (copy), then skip on re-run
 S="$WORK/skills"
 quiet bash "$ROOT/install.sh" --skill --skill-dir "$S"
-[ -f "$S/setup-ai-workflow/SKILL.md" ] && [ ! -L "$S/setup-ai-workflow" ] || fail "skill not copied"
+if ! { [ -f "$S/setup-ai-workflow/SKILL.md" ] && [ ! -L "$S/setup-ai-workflow" ]; }; then fail "skill not copied"; fi
 quiet bash "$ROOT/install.sh" --skill --skill-dir "$S"
 grep -q "already exists" "$WORK/out.log" || fail "skill re-install did not skip"
 ok "skill install + skip"
@@ -63,7 +63,7 @@ tar -czf "$WORK/archive/kit.tar.gz" -C "$(dirname "$ROOT")" \
   --exclude .git "$(basename "$ROOT")"
 C="$WORK/curl-project"; mkdir -p "$C"
 (cd "$C" && AIWK_ARCHIVE_URL="file://$WORK/archive/kit.tar.gz" quiet bash -s < "$ROOT/install.sh")
-[ -f "$C/AGENTS.md" ] && [ -L "$C/.claude/skills" ] || fail "piped install did not install templates"
+if ! { [ -f "$C/AGENTS.md" ] && [ -L "$C/.claude/skills" ]; }; then fail "piped install did not install templates"; fi
 (AIWK_ARCHIVE_URL="file://$WORK/archive/kit.tar.gz" quiet bash -s -- --skill --skill-dir "$WORK/curl-skills" < "$ROOT/install.sh")
 [ -f "$WORK/curl-skills/setup-ai-workflow/scripts/install.sh" ] || fail "piped skill install failed"
 ok "piped install (project + skill)"
